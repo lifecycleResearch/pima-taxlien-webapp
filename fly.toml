@@ -1,0 +1,18 @@
+app = "pima-taxlien-webapp"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8642
+
+[env]
+  OPENAI_API_KEY = "your-secret-key-here"
+
+[deploy]
+  release_command = "hermes --version"

@@ -1,0 +1,17 @@
+{
+  "name": "pima-taxlien-webapp",
+  "version": "1.0.0",
+  "description": "Pima County Tax Lien Properties with Hermes Agent + Open WebUI",
+  "main": "index.js",
+  "scripts": {
+    "dev": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "start": "node server.js",
+    "deploy:fly": "fly deploy",
+    "deploy:vercel": "vercel --prod"
+  },
+  "dependencies": {
+    "express": "^4.22.1",
+    "http-proxy-middleware": "^3.0.5"
+  }
+}
