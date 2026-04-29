@@ -50,6 +50,21 @@ npm run build
 npx vercel --prod
 ```
 
+## Telegram Bot
+
+This project includes a Telegram bot that lets you control Open WebUI via Telegram messages.
+
+See [TELEGRAM_SETUP.md](./TELEGRAM_SETUP.md) for setup instructions.
+
+Quick start:
+```bash
+# 1. Create bot with @BotFather (token: 8667415809:AAGYyi3r8DqjNl3UNq8nU4m18KYx4LDapaE)
+# 2. Get your chat ID with @userinfobot
+# 3. Configure .env
+# 4. Start stack
+docker compose up -d
+```
+
 ## AI Agent Integration (Hermes Agent)
 
 This project includes integration with [Hermes Agent](https://github.com/NousResearch/hermes-agent) from Nous Research.
