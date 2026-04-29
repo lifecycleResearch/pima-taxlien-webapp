@@ -1,0 +1,22 @@
+FROM python:3.11-alpine
+
+RUN pip install --no-cache-dir requests
+
+WORKDIR /app
+
+# Install hermes-agent
+RUN apk add --no-cache git && \
+    git clone https://github.com/NousResearch/hermes-agent.git /tmp/hermes-agent && \
+    cd /tmp/hermes-agent && \
+    pip install -e .
+
+RUN mkdir -p /root/.hermes
+
+# Set up basic config
+RUN echo "LLM_PROVIDER=openai" > /root/.hermes/.env && \
+    echo "OPENAI_API_KEY=dummy" >> /root/.hermes/.env
+
+EXPOSE 8642
+
+# Run in API server mode (checking proper command)
+CMD ["sh", "-c", "cd /tmp/hermes-agent && python run_agent.py --help | head -50"]
