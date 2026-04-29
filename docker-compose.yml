@@ -6,8 +6,21 @@ services:
     volumes:
       - open-webui-data:/app/backend/data
     environment:
-      - OPENAI_API_BASE_URL=${OPENAI_API_BASE_URL:-https://api.openai.com/v1}
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-dummy}
+      - OPENAI_API_BASE_URL=https://integrate.api.nvidia.com/v1
+      - OPENAI_API_KEY=${NVIDIA_API_KEY}
+    restart: unless-stopped
+
+  telegram-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile.telegram
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - OPENWEBUI_URL=http://open-webui:8080
+      - OPENWEBUI_USERNAME=${OPENWEBUI_USERNAME}
+      - OPENWEBUI_PASSWORD=${OPENWEBUI_PASSWORD}
+    depends_on:
+      - open-webui
     restart: unless-stopped
 
 volumes:

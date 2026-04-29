@@ -1,22 +1,62 @@
 FROM python:3.11-alpine
 
-RUN pip install --no-cache-dir requests
+RUN pip install --no-cache-dir flask requests
 
 WORKDIR /app
 
-# Install hermes-agent
 RUN apk add --no-cache git && \
     git clone https://github.com/NousResearch/hermes-agent.git /tmp/hermes-agent && \
     cd /tmp/hermes-agent && \
     pip install -e .
 
-RUN mkdir -p /root/.hermes
+# Create a simple API server wrapper for Hermes Agent
+RUN cat > /app/hermes_server.py << 'PYEOF'
+from flask import Flask, request, jsonify
+import subprocess
+import json
+import os
 
-# Set up basic config
-RUN echo "LLM_PROVIDER=openai" > /root/.hermes/.env && \
-    echo "OPENAI_API_KEY=dummy" >> /root/.hermes/.env
+app = Flask(__name__)
+
+@app.route('/v1/models', methods=['GET'])
+def models():
+    return jsonify({
+        "object": "list",
+        "data": [{
+            "id": "hermes-agent",
+            "object": "model",
+            "created": 1234567890,
+            "owned_by": "nousresearch"
+        }]
+    })
+
+@app.route('/v1/chat/completions', methods=['POST'])
+def chat_completions():
+    data = request.json
+    messages = data.get('messages', [])
+    query = messages[-1]['content'] if messages else "Hello"
+    
+    # Call hermes agent
+    result = subprocess.run(
+        ['python', '/tmp/hermes-agent/run_agent.py', '-q', query],
+        capture_output=True,
+        text=True,
+        env={**os.environ, 'OPENAI_API_KEY': os.environ.get('NVIDIA_API_KEY', '')}
+    )
+    
+    return jsonify({
+        "choices": [{
+            "message": {
+                "role": "assistant",
+                "content": result.stdout or result.stderr
+            }
+        }]
+    })
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8642)
+PYEOF
 
 EXPOSE 8642
 
-# Run in API server mode (checking proper command)
-CMD ["sh", "-c", "cd /tmp/hermes-agent && python run_agent.py --help | head -50"]
+CMD ["python", "/app/hermes_server.py"]
