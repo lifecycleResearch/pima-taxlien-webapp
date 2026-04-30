@@ -14,13 +14,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.telegram
+    container_name: pima-taxlien-webapp-telegram-bot-1
+    ports:
+      - "5001:5000"
     environment:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - OPENWEBUI_URL=http://open-webui:8080
-      - OPENWEBUI_USERNAME=${OPENWEBUI_USERNAME}
-      - OPENWEBUI_PASSWORD=${OPENWEBUI_PASSWORD}
     depends_on:
-      - open-webui
+      open-webui:
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:
