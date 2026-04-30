@@ -1,7 +1,7 @@
 {
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/(.*)", "destination": "/client/dist/$1" }
-  ],
-  "outputDirectory": "client/dist"
+    { "source": "/openwebui", "destination": "/openwebui.html" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
